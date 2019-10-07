@@ -5,6 +5,7 @@ import argparse
 import re
 import logging
 import sys
+import time
 
 from btlewrap import available_backends, BluepyBackend, GatttoolBackend, PygattBackend
 from mitemp_bt.mitemp_bt_poller import MiTempBtPoller, \
@@ -89,7 +90,15 @@ def main():
         parser.print_help()
         sys.exit(0)
 
-    args.func(args)
+    backend = _get_backend(args)
+    try:
+        while True:
+            poller = MiTempBtPoller(args.mac, backend)
+            print("Temperature: {}".format(poller.parameter_value(MI_TEMPERATURE)))
+            time.sleep(5)
+    except KeyboardInterrupt:
+        print("Close program")
+    # args.func(args)
 
 
 if __name__ == '__main__':
